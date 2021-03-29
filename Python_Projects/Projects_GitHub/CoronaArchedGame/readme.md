@@ -1,2 +1,0 @@
-## Go Corona Go Game
-
