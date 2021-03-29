@@ -4,7 +4,7 @@ This is a  game Made by me for just fun and You can use
 this if you want to do so 
 ```
 
-###pygame
+##pygame
 
 Please do check about [PyGame](https://www.pygame.org/docs/).
 
