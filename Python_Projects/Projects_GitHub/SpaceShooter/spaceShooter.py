@@ -1,35 +1,43 @@
 import pygame
 import os
+
 pygame.font.init()
 pygame.mixer.init()
 
 #  Actual game starts here
-
 # PARAMETERS
 # ------------------
 # sounds
 # -----------
-
-Bullet_sound = pygame.mixer.Sound(os.path.join('Sonds', 'Grenade+1.mp3'))
-Bullet_fire_sound = pygame.mixer.Sound(os.path.join('Sonds', 'Gun+Silencer.mp3'))
-Background_Sound = pygame.mixer.Sound(os.path.join('Sonds', 'videoplayback_4.mp3'))
+Bullet_sound = pygame.mixer.Sound(os.path.join('Sounds', 'Grenade+1.mp3'))
+Bullet_fire_sound = pygame.mixer.Sound(os.path.join('Sounds', 'Gun+Silencer.mp3'))
+Background_Sound = pygame.mixer.Sound(os.path.join('Sounds', 'videoplayback_4.mp3'))
 pygame.mixer.music.set_volume(1.0)
 # -----------
+
+# Width & Height
+# -------------------
 spaceship_width = 55
 spaceship_height = 40
 width, height = 900, 500
 window = pygame.display.set_mode((width, height))
 pygame.display.set_caption("SpaceShooter Game")
+# -------------------
 
+# Colors
+# ------------
 white = (255, 255, 255)
 black = (0, 0, 0)
+# -------------
 
 FPS = 60
 Yellow_SpaceShip = pygame.image.load(os.path.join('Assets', 'spaceship_yellow.png'))
 Red_SpaceShip = pygame.image.load(os.path.join('Assets', 'spaceship_red.png'))
 yellow_spaceship = pygame.transform.rotate(
     pygame.transform.scale(Yellow_SpaceShip, (spaceship_width, spaceship_height)), 90)
-red_spaceship = pygame.transform.rotate(pygame.transform.scale(Red_SpaceShip, (spaceship_width, spaceship_height)), 270)
+red_spaceship = pygame.transform.rotate(
+    pygame.transform.scale(Red_SpaceShip, (spaceship_width, spaceship_height)),
+    270)
 
 VEL = 5
 Border = pygame.Rect(width // 2, 0, 10, height)
@@ -43,10 +51,22 @@ space = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'space.p
 Health_font = pygame.font.SysFont('comicsans', 40)
 Winner_font = pygame.font.SysFont('comicsans', 100)
 
-# ------------------
-
 
 def draw_window(red, yellow, yellow_bullets, red_bullets, red_health, yellow_health):
+    """
+    :param red: red Spaceship
+    :param yellow: yellow spaceship
+    :param yellow_bullets: All the fired Bullets by Yellow spaceship will be here but it will be updated every time
+    :param red_bullets:
+    :param red_health:
+    :param yellow_health:
+
+    :Convention == > we just draw the whole screen or fill it every time
+    with updated content such as scores and health it is the main
+    function which draws every surface on the window without this
+    we can not draw contents in the screen
+
+    """
     window.blit(space, (0, 0))
     pygame.draw.rect(window, black, Border)
 
@@ -69,6 +89,12 @@ def draw_window(red, yellow, yellow_bullets, red_bullets, red_health, yellow_hea
 
 
 def red_handle_movement(keys_pressed, red):
+    """
+    :param keys_pressed:
+    :param red:
+    :return:
+
+    """
     if keys_pressed[pygame.K_LEFT] and red.x - VEL > Border.x + Border.width + 15:  # LEFT
         red.x -= VEL
     if keys_pressed[pygame.K_RIGHT] and red.x + VEL + red.width < width:  # RIGHT
@@ -80,6 +106,11 @@ def red_handle_movement(keys_pressed, red):
 
 
 def yellow_handle_movement(keys_pressed, yellow):
+    """
+    :param keys_pressed:
+    :param yellow:
+    :return:
+    """
     if keys_pressed[pygame.K_a] and yellow.x - VEL > 0:  # LEFT
         yellow.x -= VEL
     if keys_pressed[pygame.K_d] and yellow.x + VEL + yellow.width < Border.x:  # RIGHT
@@ -91,6 +122,13 @@ def yellow_handle_movement(keys_pressed, yellow):
 
 
 def handle_bullets(yellow_bullets, red_bullets, yellow, red):
+    """
+    :param yellow_bullets:
+    :param red_bullets:
+    :param yellow:
+    :param red:
+    :return:
+    """
     for bullets in yellow_bullets:
         bullets.x += Bullet_VEL
         if red.colliderect(bullets):
@@ -111,15 +149,22 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
 
 
 def draw_winner_text(text):
+    """
+    :param text:
+    :return:
+    """
     # print("yes")
     draw_txt = Winner_font.render(text, True, white)
-    window.blit(draw_txt, (width//2 - draw_txt.get_width()//2,
-                           height//2 - draw_txt.get_height()//2))
+    window.blit(draw_txt, (width // 2 - draw_txt.get_width() // 2,
+                           height // 2 - draw_txt.get_height() // 2))
     pygame.display.update()
     pygame.time.delay(5000)
 
 
 def main():
+    """
+    :return:
+    """
     # spaceship dimensions
     red = pygame.Rect(700, 300, spaceship_width, spaceship_height)
     yellow = pygame.Rect(100, 300, spaceship_width, spaceship_height)
@@ -191,8 +236,5 @@ def main():
 
         handle_bullets(yellow_bullets, red_bullets, yellow, red)
         draw_window(red, yellow, yellow_bullets, red_bullets, red_health, yellow_health)
-    main()
-
-
-if __name__ == "__main__":
-    main()
+        pygame.display.update()
+    # quit()
