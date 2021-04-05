@@ -11,9 +11,9 @@ color_light = (170, 170, 170)
 # dark shade of the button
 color_dark = (100, 100, 100)
 # --------------
+background_sound = pygame.mixer.Sound(os.path.join('Sounds', 'videoplayback_4.mp3'))
 
 width_main_menu, main_menu_height = 900, 500
-
 
 main_screen = pygame.display.set_mode((width_main_menu, main_menu_height))
 pygame.display.set_caption("Space Shooter Main Menu")
@@ -29,14 +29,16 @@ Exit_txt = text_font.render('Exit', True, color)
 # -----------------
 start_game_event = pygame.USEREVENT + 1
 Exit_game_event = pygame.USEREVENT + 2
+
+
 # -----------------
 
 
 def draw_main_menu():
     main_screen.blit(background, (0, 0))
-    start_game = pygame.draw.rect(main_screen, color_light, [width_main_menu / 2 - 100, main_menu_height / 2 - 100, 200,
-                                                             30])
-    Exit = pygame.draw.rect(main_screen, color_light, [width_main_menu / 2 - 100, main_menu_height / 2, 200, 30])
+    pygame.draw.rect(main_screen, color_light, [width_main_menu / 2 - 100, main_menu_height / 2 - 100, 200,
+                                                30])
+    pygame.draw.rect(main_screen, color_light, [width_main_menu / 2 - 100, main_menu_height / 2, 200, 30])
     # print(start_game, Exit)
     main_screen.blit(start_game_txt, (width_main_menu / 2 - 100, main_menu_height / 2 - 100))
     main_screen.blit(Exit_txt, (width_main_menu / 2 - 30, main_menu_height / 2))
@@ -45,7 +47,7 @@ def draw_main_menu():
 
 def main_loop():
     running = True
-
+    background_sound.play()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

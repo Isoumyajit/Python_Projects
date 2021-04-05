@@ -179,7 +179,7 @@ def main():
     run = True
     while run:
         clock.tick(FPS)
-        Background_Sound.play()
+        # Background_Sound.play()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -190,30 +190,22 @@ def main():
                 if event.key == pygame.K_SPACE and len(yellow_bullets) < MAX_BULLETS_PER_FIRE:
                     bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height // 2 - 2, 10, 5)
                     yellow_bullets.append(bullet)
-                    Background_Sound.stop()
                     Bullet_fire_sound.play()
-                    Background_Sound.play()
 
                 if event.key == pygame.K_LCTRL and len(red_bullets) < MAX_BULLETS_PER_FIRE:
                     bullet = pygame.Rect(red.x, red.y + red.height // 2 - 2, 10, 5)
                     red_bullets.append(bullet)
-                    Background_Sound.stop()
                     Bullet_fire_sound.play()
-                    Background_Sound.play()
 
             if event.type == red_hit:
                 red_health -= 1
                 print(red_health)
-                Background_Sound.stop()
                 Bullet_sound.play()
-                Background_Sound.play()
 
             if event.type == yellow_hit:
                 yellow_health -= 1
                 print(yellow_health)
-                Background_Sound.stop()
                 Bullet_sound.play()
-                Background_Sound.play()
 
         winner_text = ""
         if red_health <= 0:
