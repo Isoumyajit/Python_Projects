@@ -1,17 +1,15 @@
 import pygame
-import math
 import random
-import numpy as np
 import os
 import sys
 
 # global parameters
 # -----------------
 
-FPS = 30
+FPS = 60
 fpsClock = 0
-ScreenWidth = 289
-ScreenHeight = 511
+ScreenWidth = 390
+ScreenHeight = 600
 
 Window = pygame.display.set_mode((ScreenWidth, ScreenHeight))
 GroundY = ScreenHeight * 0.8
@@ -23,64 +21,39 @@ Pipe = None
 Base = None
 base_x = 0
 
+# Physics objects
+gravity = 0.25
+bird_movement = 0
 
 # -----------------
 
 
-def draw_screen(player_x, player_y):
+def draw_screen(bird_surface, bird_rect, Floor_flow):
     Window.blit(Game_sprites['background'], (0, 0))
-    Window.blit(Game_sprites['player'], (player_x, player_y))
-    Window.blit(Game_sprites['Base'], (base_x, GroundY))
+    Window.blit(bird_surface, bird_rect)
+    Window.blit(Game_sprites['Base'], (Floor_flow, 530))
+    Window.blit(Game_sprites['Base'], (Floor_flow + 390, 530))
     pygame.display.update()
     fpsClock.tick(FPS)
 
 
 def get_random_pipe():
-    """
-    :doc: Generate pipes of random height
-    """
-    pipe_height = Game_sprites['Pipe'].get_height()
-    offset = ScreenHeight // 3
-    y2 = offset * random.randrange(0, int(ScreenHeight - Game_sprites['Base'].get_height() - 1.2 * offset))
-    pipe_x = ScreenWidth + 10
-    y1 = pipe_height - y2 + offset
-    pipe = [
-        {'x': pipe_x, 'y': -y1},  # upper
-        {'x': pipe_x, 'y': y2}  # lower
-    ]
-    return pipe
-
-
-def isCollide(player_x, player_y, upper_pipes, lower_pipes):
-    return True
     pass
 
 
 def main_loop():
     score = 0
+
+    jump_power = 2
+
+    gravity_var = gravity
+    bird_movement_local = bird_movement
+
     print(Game_sounds, Game_sprites)
     running = True
-    player_x = int(ScreenWidth / 5)
-    player_y = int(ScreenHeight - Game_sprites['player'].get_height()) / 2
-    newPipe1 = get_random_pipe()
-    newPipe2 = get_random_pipe()
-
-    upperPipes = [
-        {'x': ScreenWidth + 200, 'y': newPipe1[0]['y']},
-        {'x': ScreenWidth + 200 + (ScreenWidth // 2), 'y': newPipe2[1]['y']}
-    ]
-    lowerPipes = [
-        {'x': ScreenWidth + 200, 'y': newPipe1[0]['y']},
-        {'x': ScreenWidth + 200 + (ScreenWidth // 2), 'y': newPipe2[1]['y']}
-    ]
-
-    player_acc_y = 1
-    player_velocity_y = -9
-    player_max_velocity = 10
-    player_min_velocity = -8
-
-    player_flapped = False
-    player_flap_velocity = -8
+    bird_surface = Game_sprites['player']
+    bird_rect = bird_surface.get_rect(center=(ScreenWidth // 2, ScreenHeight // 2))
+    base_pos = 0
 
     while running:
         for event in pygame.event.get():
@@ -90,24 +63,15 @@ def main_loop():
                 sys.exit()
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                if player_y > 0:
-                    player_velocity_y = player_flap_velocity
-                    player_flapped = True
-                    Game_sounds['wing'].play()
+                bird_movement_local = 0
+                bird_movement_local -= 10
 
-            crash_test = isCollide(player_x, player_y, upperPipes, lowerPipes)
-            if crash_test:
-                return
-
-            player_mid_position = player_x + Game_sprites['player'].get_width() // 2
-            for pipe in upperPipes:
-                pipe_mid = pipe['x'] + Game_sprites['pipe'][0].get_width()//2
-                if pipe_mid <= pipe_mid < pipe_mid + 4:
-                    score += 1
-                    print(f"Your score is {score}")
-                    Game_sounds['point'].play()
-
-        draw_screen(player_x, player_y + player_velocity_y)
+        bird_movement_local += gravity_var
+        bird_rect.centery += bird_movement_local
+        draw_screen(bird_surface, bird_rect, base_pos)
+        base_pos -= 1
+        if base_pos <= -390:
+            base_pos = 0
 
 
 if __name__ == '__main__':
@@ -133,10 +97,12 @@ if __name__ == '__main__':
     Game_sounds['swoosh'] = pygame.mixer.Sound(os.path.join('Sounds', 'swoosh.wav'))
     Game_sounds['wing'] = pygame.mixer.Sound(os.path.join('Sounds', 'wing.wav'))
 
-    Game_sprites['background'] = pygame.image.load(os.path.join('Img', 'background.png')).convert()
+    Game_sprites['background'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'background.png')),
+                                                        (ScreenWidth, ScreenHeight)).convert()
     Game_sprites['player'] = pygame.image.load(os.path.join('Img', 'bird.png')).convert_alpha()
     Game_sprites['Pipe'] = pygame.image.load(os.path.join('Img', 'pipe.png')).convert_alpha()
-    Game_sprites['Base'] = pygame.image.load(os.path.join('Img', 'base.png')).convert_alpha()
+    Game_sprites['Base'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'base.png')),
+                                                  (ScreenWidth, int(ScreenHeight / 8))).convert()
 
     main_loop()
 
