@@ -24,29 +24,33 @@ base_x = 0
 # Physics objects
 gravity = 0.25
 bird_movement = 0
+flag = True
 
-# pipe height & distance
-
-pipe_height = [350, 400, 390, 300]
 pipe_distance = 900
 
-
+# score_list
+scores = [0]
 # -----------------
 
+
+def rotate_bird(bird_surface, movement):
+    new_bird = pygame.transform.rotozoom(bird_surface, -movement * 3, 1)
+    return new_bird
+
+
 def create_pipe():
-    # pipe_dis = random.choice(pipe_distance)
-    pipe_high = random.choice(pipe_height)
+    pipe_high = random.randrange(300, 550, 70)
 
     new_bottom_pipe = (Game_sprites['Pipe']).get_rect(midtop=(ScreenWidth + pipe_distance,
                                                               pipe_high))
     new_top_pipe = (Game_sprites['Pipe'].get_rect(midbottom=(ScreenWidth + pipe_distance,
-                                                             pipe_high - 210)))
+                                                             pipe_high - 200)))
     return new_bottom_pipe, new_top_pipe
 
 
-def move_pipes(all_pipes):
+def move_pipes(all_pipes, base_pos):
     for pipe in all_pipes:
-        pipe.centerx -= 2
+        pipe.centerx -= base_pos
     return all_pipes
 
 
@@ -58,13 +62,12 @@ def draw_pipes(all_pipes):
             Window.blit(pygame.transform.flip(Game_sprites['Pipe'], False, True), pipe)
 
 
-def draw_screen(bird_surface, bird_rect, Floor_flow, all_pipes):
+def draw_screen(bird_surface, bird_rect, Floor_flow, all_pipes, current_score, game_Status):
     Window.blit(Game_sprites['background'], (0, 0))
     Window.blit(bird_surface, bird_rect)
-    if is_collide(bird_rect, all_pipes):
-        print("Collision")
-
-    draw_pipes(all_pipes)
+    if game_Status == "main_game":
+        draw_pipes(all_pipes)
+    display_live_score(game_Status, current_score)
     Window.blit(Game_sprites['Base'], (Floor_flow, 530))
     Window.blit(Game_sprites['Base'], (Floor_flow + 390, 530))
     pygame.display.update()
@@ -77,13 +80,29 @@ def is_collide(bird_rect, pipes):
             return True
     if bird_rect.top <= -20:
         return True
-    if bird_rect.bottom >= 600 - ScreenHeight//8:
+    if bird_rect.bottom >= 600 - ScreenHeight // 8:
         return True
     return False
 
 
+def display_live_score(game_status, score):
+    print(game_status)
+    if game_status == "main_game":
+        score_surface = game_font.render(str(int(score)), True, (255, 255, 255))
+        score_rect = score_surface.get_rect(center=(ScreenWidth // 2, ScreenHeight // 8))
+        Window.blit(score_surface, score_rect)
+    elif game_status == "game_over":
+        score_surface = game_font.render(f"Score: {str(int(score))}", True, (255, 255, 255))
+        score_rect = score_surface.get_rect(center=(ScreenWidth // 2, ScreenHeight // 8))
+        Window.blit(score_surface, score_rect)
+        high_score_surface = game_font.render(f"High Score: {str(int(max(scores)))}", True, (255, 0, 0))
+        high_score_rect = high_score_surface.get_rect(center=(ScreenWidth // 2, 440))
+        Window.blit(high_score_surface, high_score_rect)
+
+
 def main_loop():
-    # score = 0
+    score = 0
+    # High_score = 0
 
     jump_power = 5
     # Pipes
@@ -99,6 +118,9 @@ def main_loop():
     bird_surface = Game_sprites['player']
     bird_rect = bird_surface.get_rect(center=(ScreenWidth // 2, ScreenHeight // 2))
     base_pos = 0
+    moving_speed = 2
+
+    is_Active = True
 
     while running:
         for event in pygame.event.get():
@@ -110,20 +132,51 @@ def main_loop():
             if event.type == SPAWN_PIPE:
                 pipe_lst.extend(create_pipe())
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and is_Active:
                 bird_movement_local = 0
                 bird_movement_local -= jump_power
                 Game_sounds['wing'].play()
 
-        bird_movement_local += gravity_var
-        bird_rect.centery += bird_movement_local
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and is_Active == False:
+                is_Active = True
+                bird_rect.center = (ScreenWidth // 4, ScreenHeight // 9)
+                score = 0
+                pipe_lst.clear()
+                bird_movement_local = 0
 
-        pipe_lst = move_pipes(pipe_lst)
-        draw_screen(bird_surface, bird_rect, base_pos, pipe_lst)
+        if is_Active:
+            score += 0.02
+            rotate_bird_animation = rotate_bird(bird_surface, bird_movement_local)
+            draw_screen(rotate_bird_animation, bird_rect, base_pos, pipe_lst, score, "main_game")
+            pipe_lst = move_pipes(pipe_lst, moving_speed)
+            bird_movement_local += gravity_var
+            bird_rect.centery += bird_movement_local
 
-        base_pos -= 2
-        if base_pos <= -390:
-            base_pos = 0
+            if score <= 50:
+                base_pos -= 2
+                moving_speed = 2
+
+            elif 50 <= score <= 79:
+                base_pos -= 4
+                moving_speed = 4
+
+            elif 80 <= score <= 100:
+                base_pos -= 6
+                moving_speed = 6
+
+            if base_pos <= -390:
+                base_pos = 0
+
+            if is_collide(bird_rect, pipe_lst):
+                scores.append(score)
+                pipe_lst.clear()
+                draw_screen(rotate_bird_animation, bird_rect, base_pos, pipe_lst, score, "game_over")
+                is_Active = False
+                print(scores)
+                # pygame.display.update()
+                score = 0
+                # pygame.display.update()
+                # Game_sounds['point'].play()
 
 
 if __name__ == '__main__':
@@ -153,14 +206,15 @@ if __name__ == '__main__':
                                                         (ScreenWidth, ScreenHeight)).convert()
     Game_sprites['player'] = pygame.image.load(os.path.join('Img', 'bird.png')).convert_alpha()
     Game_sprites['Pipe'] = pygame.image.load(os.path.join('Img', 'pipe.png'))
-    Game_sprites['Pipe'] = pygame.transform.scale(Game_sprites['Pipe'], (Game_sprites['Pipe'].get_width(),
+    Game_sprites['Pipe'] = pygame.transform.scale(Game_sprites['Pipe'], (Game_sprites['Pipe'].get_width() + 10,
                                                                          Game_sprites[
                                                                              'Pipe'].get_height() + 70)).convert_alpha()
     # Game_sprites['Pipe_top'] = pygame.transform.flip(Game_sprites['Pipe'], False, True)
 
     Game_sprites['Base'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'base.png')),
                                                   (ScreenWidth, int(ScreenHeight / 8))).convert()
-
+    pygame.font.init()
+    game_font = pygame.font.SysFont('Ariel', 30)
     main_loop()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
