@@ -58,7 +58,7 @@ def main_loop():
                 print(mouse)
                 if width_main_menu / 2 - 100 <= mouse[0] <= width_main_menu / 2 - 100 + 200 and \
                         main_menu_height / 2 - 100 <= mouse[1] <= main_menu_height / 2 - 100 + 30:
-
+                    main()
 
                 if width_main_menu / 2 - 30 <= mouse[0] <= width_main_menu / 2 - 30 + 200 and \
                         main_menu_height / 2 <= mouse[1] <= main_menu_height / 2 + 30:

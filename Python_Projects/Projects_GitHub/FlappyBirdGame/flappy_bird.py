@@ -219,6 +219,7 @@ def main_loop():
                     base_pos = 0
 
                 if is_collide(bird_rect, pipe_lst):
+                    Game_sounds['hit'].play()
                     if score in scores:
                         highest_scorer = False
                     elif score > max(scores):
@@ -226,12 +227,15 @@ def main_loop():
                     elif score < max(scores):
                         highest_scorer = False
                     scores.append(score)
+                    Game_sounds['die'].play()
                     draw_screen(rotate_bird_animation, bird_rect, base_pos, pipe_lst, score, "game_over")
                     is_Active = False
                     last_score = score
                     score = 0
                 if not is_Active:
                     draw_score_winner_screen(scores, last_score, highest_scorer)
+                    pygame.time.delay(2000)
+                    game_start = False
 
 
 if __name__ == '__main__':
