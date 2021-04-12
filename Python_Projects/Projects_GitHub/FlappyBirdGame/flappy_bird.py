@@ -278,9 +278,4 @@ class main_game:
 
         self.main_loop()
 
-
-if __name__ == "__main__":
-    obj = main_game()
-    obj.initialization()
-
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
