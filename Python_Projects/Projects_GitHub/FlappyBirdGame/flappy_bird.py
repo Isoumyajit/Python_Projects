@@ -4,9 +4,6 @@ import os
 import sys
 
 
-# global parameters
-# -----------------
-
 def rotate_bird(bird_surface, movement):
     new_bird = pygame.transform.rotozoom(bird_surface, -movement * 3, 1)
     return new_bird
@@ -49,6 +46,49 @@ class main_game:
         # score_list
         self.__scores = [0]
         self.__game_font = pygame.font.SysFont('Ariel', 30)
+
+        #     Initialization
+        self.fpsClock = pygame.time.Clock()
+        pygame.display.set_caption('Flappy Bird Game')
+        self.__Game_sprites['numbers'] = (
+            pygame.image.load(os.path.join('Img', '0.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '1.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '2.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '3.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '4.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '5.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '7.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '8.png')).convert_alpha(),
+            pygame.image.load(os.path.join('Img', '9.png')).convert_alpha()
+        )
+        # Game_sprites['message'] = pygame.image.load(os.path.join('Img', 'message.png')).convert_alpha()
+        # Game_Sounds
+        self.__Game_sounds['die'] = pygame.mixer.Sound(os.path.join('Sounds', 'die.wav'))
+        self.__Game_sounds['hit'] = pygame.mixer.Sound(os.path.join('Sounds', 'hit.wav'))
+        self.__Game_sounds['point'] = pygame.mixer.Sound(os.path.join('Sounds', 'point.wav'))
+        self.__Game_sounds['swoosh'] = pygame.mixer.Sound(os.path.join('Sounds', 'swoosh.wav'))
+        self.__Game_sounds['wing'] = pygame.mixer.Sound(os.path.join('Sounds', 'wing.wav'))
+
+        self.__Game_sprites['screen'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'message.png')),
+                                                               (250, 300)). \
+            convert_alpha()
+        self.__Game_sprites['background'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'background'
+                                                                                                         '.png')),
+                                                                   (self.__ScreenWidth, self.__ScreenHeight)).convert()
+        self.__Game_sprites['player'] = pygame.image.load(os.path.join('Img', 'bird.png')).convert_alpha()
+        self.__Game_sprites['Pipe'] = pygame.image.load(os.path.join('Img', 'pipe.png'))
+        self.__Game_sprites['Pipe'] = pygame.transform.scale(self.__Game_sprites['Pipe'],
+                                                             (self.__Game_sprites['Pipe'].get_width() + 10,
+                                                              self.__Game_sprites[
+                                                                  'Pipe'].get_height() + 70)).convert_alpha()
+
+        self.__Game_sprites['Base'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'base.png')),
+                                                             (self.__ScreenWidth,
+                                                              int(self.__ScreenHeight / 8))).convert()
+        # Game fonts
+        self.__game_screen_rect = self.__Game_sprites['screen'].get_rect(center=(self.__ScreenWidth // 2,
+                                                                                 self.__ScreenHeight // 2))
+
     # -----------------
 
     def game_start_screen(self):
@@ -234,48 +274,7 @@ class main_game:
                         bird_movement_local = 0
                         game_start = False
 
-    def initialization(self):
-        self.fpsClock = pygame.time.Clock()
-        pygame.display.set_caption('Flappy Bird Game')
-        self.__Game_sprites['numbers'] = (
-            pygame.image.load(os.path.join('Img', '0.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '1.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '2.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '3.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '4.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '5.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '7.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '8.png')).convert_alpha(),
-            pygame.image.load(os.path.join('Img', '9.png')).convert_alpha()
-        )
-        # Game_sprites['message'] = pygame.image.load(os.path.join('Img', 'message.png')).convert_alpha()
-        # Game_Sounds
-        self.__Game_sounds['die'] = pygame.mixer.Sound(os.path.join('Sounds', 'die.wav'))
-        self.__Game_sounds['hit'] = pygame.mixer.Sound(os.path.join('Sounds', 'hit.wav'))
-        self.__Game_sounds['point'] = pygame.mixer.Sound(os.path.join('Sounds', 'point.wav'))
-        self.__Game_sounds['swoosh'] = pygame.mixer.Sound(os.path.join('Sounds', 'swoosh.wav'))
-        self.__Game_sounds['wing'] = pygame.mixer.Sound(os.path.join('Sounds', 'wing.wav'))
-
-        self.__Game_sprites['screen'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'message.png')),
-                                                               (250, 300)). \
-            convert_alpha()
-        self.__Game_sprites['background'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'background'
-                                                                                                         '.png')),
-                                                                   (self.__ScreenWidth, self.__ScreenHeight)).convert()
-        self.__Game_sprites['player'] = pygame.image.load(os.path.join('Img', 'bird.png')).convert_alpha()
-        self.__Game_sprites['Pipe'] = pygame.image.load(os.path.join('Img', 'pipe.png'))
-        self.__Game_sprites['Pipe'] = pygame.transform.scale(self.__Game_sprites['Pipe'],
-                                                             (self.__Game_sprites['Pipe'].get_width() + 10,
-                                                              self.__Game_sprites[
-                                                                  'Pipe'].get_height() + 70)).convert_alpha()
-
-        self.__Game_sprites['Base'] = pygame.transform.scale(pygame.image.load(os.path.join('Img', 'base.png')),
-                                                             (self.__ScreenWidth,
-                                                              int(self.__ScreenHeight / 8))).convert()
-        # Game fonts
-        self.__game_screen_rect = self.__Game_sprites['screen'].get_rect(center=(self.__ScreenWidth // 2,
-                                                                                 self.__ScreenHeight // 2))
-
+    def start_game(self):
         self.main_loop()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
