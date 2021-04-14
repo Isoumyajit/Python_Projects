@@ -34,6 +34,7 @@ class main_game:
                 if events.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+            self.window.fill((170, 220, 90))
             fruit_object.draw_fruit()
             pygame.display.update()
             self.__fps_checker.tick(self.__FPS)
@@ -50,7 +51,7 @@ class fruit:
     def draw_fruit(self):
         fruit_rect = pygame.Rect(int(self.pos.x * main_game.cell_size), int(self.pos.y*main_game.cell_size),
                                  main_game.cell_size, main_game.cell_size)
-        pygame.draw.rect(main_game.window, (126, 166, 110), fruit_rect)
+        pygame.draw.rect(main_game.window, (126, 190, 170), fruit_rect)
 
 
 class snake:
