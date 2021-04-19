@@ -1,6 +1,6 @@
 import datetime
 import pyttsx3 as pp
-import speech_recognition as help
+import speech_recognition as sr
 import wikipedia
 import webbrowser
 import cv2
@@ -8,8 +8,7 @@ import os
 import re
 import smtplib
 import random
-from subprocess import call
-import random as rd
+
 # //////////////////////////////////////
 
 wishList = ["I am good", "I am going well", "I am doing well", "All is fine", "Everything is perfect",
@@ -55,8 +54,8 @@ def take_command():
     """
     Take voice command from the mic
     """
-    helper = help.Recognizer()
-    with help.Microphone() as source:
+    helper = sr.Recognizer()
+    with sr.Microphone() as source:
         print("Listening...")
         helper.pause_threshold = 1
         audio = helper.listen(source)
@@ -66,8 +65,8 @@ def take_command():
         query_parser = helper.recognize_google(audio, language='en-in')
         print(f"user said :: {query_parser}\n")
 
-    except Exception as e:
-        print(e)
+    except Exception as E:
+        print(E)
         print("Say that again please...")
 
     return query_parser
@@ -91,7 +90,8 @@ if __name__ == "__main__":
                 result = wikipedia.summary(query, sentences=3)
                 speak("According to Wikipedia " + result)
 
-            elif re.search(r"([a-z])*webcam([a-z])*", query) or re.search(r"([a-z])*picture([a-z])*", query):
+            elif re.search(r"([a-z])*webcam([a-z])*", query) or re.search(r"([a-z])*picture([a-z])*", query) or \
+                    re.search(r"([a-z])*take([a-z])*"):
                 print(lst)
                 cv2.namedWindow("preview")
                 capture = cv2.VideoCapture(0)
@@ -146,3 +146,10 @@ if __name__ == "__main__":
                 speak("Hi")
                 speak(random.choice(wishList))
                 speak("What about you hm hm ")
+
+            elif re.search(r"([a-z])*recording([a-z])*", query):
+                frame_width = 400
+                frame_height = 400
+                cap = cv2.VideoCapture()
+                while True:
+                    pass
