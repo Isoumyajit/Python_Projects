@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 import math
+import os
 import sys
 from pygame.math import Vector2
 
@@ -13,6 +14,8 @@ class main_game:
     cell_size = None
     cell_number = None
     window = None
+    sprites = {}
+    sounds = {}
 
     def __init__(self):
         pygame.init()
@@ -23,8 +26,29 @@ class main_game:
         self.__FPS = 60
         self.__fps_checker = pygame.time.Clock()
 
-        self.__sprites = {}
-        self.__sounds = {}
+        self.sprites['fruit'] = pygame.image.load(os.path.join('Assets/img/fruit.png'))
+        self.sprites['fruit'] = pygame.transform.scale(self.sprites['fruit'],
+                                                       (int(self.sprites['fruit'].get_width() * 0.07), int(self.sprites[
+                                                        'fruit'].get_height() * 0.07))).convert_alpha()
+        self.sprites['head_up'] = pygame.image.load(os.path.join('Assets/img/head_up.png')).convert_alpha()
+        self.sprites['head_down'] = pygame.image.load(os.path.join('Assets/img/head_down.png')).convert_alpha()
+        self.sprites['head_left'] = pygame.image.load(os.path.join('Assets/img/head_left.png')).convert_alpha()
+        self.sprites['head_right'] = pygame.image.load(os.path.join('Assets/img/head_right.png')).convert_alpha()
+        
+        self.sprites['tail_up'] = pygame.image.load(os.path.join('Assets/img/tail_up.png')).convert_alpha()
+        self.sprites['tail_down'] = pygame.image.load(os.path.join('Assets/img/tail_down.png')).convert_alpha()
+        self.sprites['tail_right'] = pygame.image.load(os.path.join('Assets/img/tail_right.png')).convert_alpha()
+        self.sprites['tail_left'] = pygame.image.load(os.path.join('Assets/img/tail_left.png')).convert_alpha()
+
+        self.sprites['body_tr'] = pygame.image.load(os.path.join('Assets/img/body_tr.png')).convert_alpha()
+        self.sprites['body_tl'] = pygame.image.load(os.path.join('Assets/img/body_tl.png')).convert_alpha()
+        self.sprites['body_br'] = pygame.image.load(os.path.join('Assets/img/body_br.png')).convert_alpha()
+        self.sprites['body_bl'] = pygame.image.load(os.path.join('Assets/img/body_bl.png')).convert_alpha()
+
+        self.sprites['body_horizontal'] = pygame.image.load(
+            os.path.join('Assets/img/body_horizontal.png')).convert_alpha()
+        self.sprites['body_vertical'] = pygame.image.load(
+            os.path.join('Assets/img/body_vertical.png')).convert_alpha()
 
         self.__screen_update = pygame.USEREVENT
         pygame.time.set_timer(self.__screen_update, 150)
@@ -46,16 +70,20 @@ class main_game:
                     game_runner.hit()
 
                 if events.type == pygame.KEYDOWN and events.key == pygame.K_UP:
-                    snake_obj.direction = Vector2(0, -1)
+                    if snake_obj.direction.y != 1:
+                        snake_obj.direction = Vector2(0, -1)
 
                 elif events.type == pygame.KEYDOWN and events.key == pygame.K_DOWN:
-                    snake_obj.direction = Vector2(0, 1)
+                    if snake_obj.direction.y != -1:
+                        snake_obj.direction = Vector2(0, 1)
 
                 elif events.type == pygame.KEYDOWN and events.key == pygame.K_LEFT:
-                    snake_obj.direction = Vector2(-1, 0)
+                    if snake_obj.direction.x != 1:
+                        snake_obj.direction = Vector2(-1, 0)
 
                 elif events.type == pygame.KEYDOWN and events.key == pygame.K_RIGHT:
-                    snake_obj.direction = Vector2(1, 0)
+                    if snake_obj.direction.x != -1:
+                        snake_obj.direction = Vector2(1, 0)
 
             self.window.fill((170, 220, 90))
             fruit_object.draw_fruit()
@@ -73,7 +101,7 @@ class fruit:
     def draw_fruit(self):
         fruit_rect = pygame.Rect(int(self.pos.x * main_game.cell_size), int(self.pos.y * main_game.cell_size),
                                  main_game.cell_size, main_game.cell_size)
-        pygame.draw.rect(main_game.window, (126, 190, 200), fruit_rect)
+        main_game.window.blit(main_game.sprites['fruit'], fruit_rect)
 
     def randomize(self):
         self.__init__()
